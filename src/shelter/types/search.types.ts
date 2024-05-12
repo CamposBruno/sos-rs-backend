@@ -3,6 +3,11 @@ import { SupplyPriority } from '../../supply/types';
 
 export type ShelterAvailabilityStatus = 'available' | 'unavailable' | 'waiting';
 
+export type ShelterLocation = {
+  latitude: number;
+  longitude: number;
+};
+
 export interface IFilterFormProps {
   search: string;
   priority: SupplyPriority | null;
@@ -10,6 +15,7 @@ export interface IFilterFormProps {
   supplyIds: string[];
   shelterStatus: ShelterAvailabilityStatus[];
   tags: ShelterTagInfo | null;
+  location: ShelterLocation | null;
 }
 
 export type SearchShelterTagResponse = Shelter & {

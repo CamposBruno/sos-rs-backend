@@ -14,6 +14,7 @@ import { SearchSchema } from '../types';
 import { ShelterSearch, parseTagResponse } from './ShelterSearch';
 import { SupplyPriority } from '../supply/types';
 import { IFilterFormProps } from './types/search.types';
+import { sortByProximity } from '@/utils/utils';
 
 @Injectable()
 export class ShelterService {
@@ -114,6 +115,7 @@ export class ShelterService {
       page,
       perPage,
       search: searchQuery,
+      location,
     } = SearchSchema.parse(query);
     const queryData = qs.parse(searchQuery) as unknown as IFilterFormProps;
     const { query: where } = new ShelterSearch(this.prismaService, queryData);
@@ -129,7 +131,7 @@ export class ShelterService {
       where,
     };
 
-    const results = await this.prismaService.shelter.findMany({
+    let results = await this.prismaService.shelter.findMany({
       ...whereData,
       select: {
         id: true,
@@ -161,6 +163,10 @@ export class ShelterService {
         },
       },
     });
+
+    if (location) {
+      results = sortByProximity(results, location.latitude, location.longitude);
+    }
 
     const parsed = parseTagResponse(queryData, results, this.voluntaryIds);
 
